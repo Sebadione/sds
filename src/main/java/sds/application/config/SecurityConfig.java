@@ -18,6 +18,9 @@ import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.session.RegisterSessionAuthenticationStrategy;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
+import org.springframework.security.web.context.SecurityContextRepository;
 import sds.services.UserService;
 
 @Configuration
@@ -32,15 +35,12 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> {
                     session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED);
+                    session.sessionFixation().migrateSession();
+                    session.addSessionAuthenticationStrategy(new RegisterSessionAuthenticationStrategy(sessionRegistry()));
                 })
-                .authorizeHttpRequests(authorizeRequests -> authorizeRequests
-                        .requestMatchers("/api/register").permitAll()
-                        .requestMatchers("/api/user").authenticated()
-                        .requestMatchers("/hello").hasRole("USER")
-                        .anyRequest().authenticated()
-                )
                 .formLogin(login -> login
-                        .defaultSuccessUrl("/hello", true)
+                        .loginPage("/login")
+                        .defaultSuccessUrl("/welcome", true)
                 )
                 .httpBasic(Customizer.withDefaults());
     return httpSecurity.build();
@@ -59,6 +59,7 @@ public class SecurityConfig {
         return provider;
     }
 
+
     @Bean
     public SessionRegistry sessionRegistry() {
         return new SessionRegistryImpl();  // Implementación predeterminada de SessionRegistry
@@ -69,5 +70,8 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();  // Usar BCrypt en vez de `withDefaultPasswordEncoder`
     }
 
-
+    @Bean
+    public SecurityContextRepository securityContextRepository() {
+        return new HttpSessionSecurityContextRepository();
+    }
 }

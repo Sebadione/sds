@@ -1,9 +1,8 @@
 package sds.services;
 
-import lombok.AllArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -12,30 +11,42 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import sds.domain.Role;
 import sds.domain.User;
-import sds.repositories.UserRepository;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
-@AllArgsConstructor
+@FieldDefaults(makeFinal = true, level = lombok.AccessLevel.PRIVATE)
 public class UserService implements UserDetailsService {
 
-    UserRepository userRepository;
+    Map<String, User> users = new HashMap<>();
     PasswordEncoder passwordEncoder;
+
+    public UserService(@Autowired PasswordEncoder passwordEncoder) {
+        this.passwordEncoder = passwordEncoder;
+        User user = new User("seba", passwordEncoder.encode("1234"), "seba@gmail.com", Role.ROLE_USER);
+        User admin = new User("admin", passwordEncoder.encode("1234"), "admin@gmail.com", Role.ROLE_ADMIN);
+
+        users.put(user.getUsername(), user);
+        users.put(admin.getUsername(), admin);
+    }
 
     @Override
     public User loadUserByUsername(String username) {
-        return userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User Not Found with username: " + username));
+        if (!users.containsKey(username)) {
+            throw new UsernameNotFoundException("User not found");
+        }
+        return users.get(username);
     }
 
     public User register(String username, String password, String mail) {
-        boolean userExists = userRepository.findByUsername(username).isPresent();
+        boolean userExists = users.containsKey(username);
         if (userExists) {
             throw new DataIntegrityViolationException("The User already exists.");
         }
 
         String encodedPassword = passwordEncoder.encode(password);
-        User user = new User(username, encodedPassword, mail, Role.USER);
-        return userRepository.save(user);
+        User user = new User(username, encodedPassword, mail, Role.ROLE_USER);
+        return users.put(username, user);
     }
 
     public User loadCurrentUser() {
