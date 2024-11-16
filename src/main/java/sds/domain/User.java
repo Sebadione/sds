@@ -13,8 +13,8 @@ import java.util.Collections;
 @Entity
 @Getter
 @Setter
-@RequiredArgsConstructor()
-@AllArgsConstructor()
+@RequiredArgsConstructor
+@AllArgsConstructor
 public class User implements UserDetails {
 
     @Id
@@ -33,29 +33,8 @@ public class User implements UserDetails {
         this.role = role;
     }
 
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return Collections.singleton(role);
-    }
-
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return true;
     }
 }

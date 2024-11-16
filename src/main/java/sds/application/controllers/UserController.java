@@ -13,12 +13,11 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import sds.application.ResponseHandler;
+import sds.application.config.JwtUtils;
 import sds.application.request.LoginRequest;
 import sds.application.request.RegisterRequest;
 import sds.domain.User;
 import sds.services.UserService;
-
-import java.io.IOException;
 
 @RestController
 @RequestMapping("")
@@ -27,6 +26,7 @@ public class UserController {
 
     UserService userService;
     AuthenticationManager authenticationManager;
+    JwtUtils jwtUtils;
 
     @PostMapping("/register")
     @PreAuthorize("permitAll()")
@@ -55,17 +55,26 @@ public class UserController {
     @PreAuthorize("permitAll()")
     public ResponseEntity<Object> login(@RequestBody LoginRequest loginRequest, HttpServletRequest request) {
         try {
+//            Authentication authentication = authenticationManager.authenticate(
+//                    new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
+//            SecurityContextHolder.getContext().setAuthentication(authentication);
+//
+//            HttpSession session = request.getSession(true);
+//            session.setAttribute("SPRING_SECURITY_CONTEXT", SecurityContextHolder.getContext());
+//
+//            System.out.println("Usuario autenticado: " + authentication.getName());
+//            System.out.println("Roles del usuario: " + authentication.getAuthorities());
+//
+//            return ResponseHandler.success("Usuario autenticado");
+
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
-            HttpSession session = request.getSession(true);
-            session.setAttribute("SPRING_SECURITY_CONTEXT", SecurityContextHolder.getContext());
+            String accessToken = jwtUtils.createToken(authentication);
+            System.out.println(authentication);
+            return ResponseHandler.success(new AuthResponse(loginRequest.getUsername(), "Login exitoso", accessToken));
 
-            System.out.println("Usuario autenticado: " + authentication.getName());
-            System.out.println("Roles del usuario: " + authentication.getAuthorities());
-
-            return ResponseHandler.success("Usuario autenticado");
 
         } catch (AuthenticationException e) {
             return ResponseHandler.badRequest("Usuario o contraseña incorrectos");}
@@ -73,4 +82,9 @@ public class UserController {
             return ResponseHandler.internalError();
         }
     }
+    record AuthResponse(
+            String username,
+            String message,
+            String token) {}
 }
+

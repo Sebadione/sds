@@ -1,15 +1,45 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="eng">
+<html lang="es">
 <head>
-    <title>Welcome Page</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Página de Bienvenida</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
-<div class="container text-center">
-    <h1 th:text="${message}"></h1>
-    <a href="/api/user" class="btn btn-primary">Ver Usuario</a>
+<div class="container d-flex justify-content-center align-items-center vh-100 text-center">
+    <div>
+        <h1 id="welcomeMessage">Bienvenido</h1>
+        <button id="fetchUserBtn" class="btn btn-primary mt-5">Ver Usuario</button>
+        <div id="userData" class="mt-3"></div>
+    </div>
 </div>
+
+<script>
+    // Verificar si el token existe
+    const jwtToken = localStorage.getItem('jwtToken');
+
+    // Botón para obtener datos del usuario
+    document.getElementById('fetchUserBtn').addEventListener('click', () => {
+        fetch('/api/user', {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${jwtToken}`,
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(response => {
+                if (!response.ok) throw new Error('No autorizado');
+                return response.json();
+            })
+            .then(data => {
+                document.getElementById('userData').textContent = JSON.stringify(data, null, 2);
+            })
+            .catch(error => {
+                document.getElementById('userData').textContent = error.message;
+                console.error('Error:', error);
+            });
+    });
+</script>
 </body>
 </html>
