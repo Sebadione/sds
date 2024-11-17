@@ -1,0 +1,92 @@
+/* General styles */
+body {
+  margin: 0;
+  font-family: 'Roboto', Arial, sans-serif;
+  background: linear-gradient(135deg, #6b73ff, #000dff);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  color: #fff;
+}
+
+.App {
+  text-align: center;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.login-container {
+  background-color: rgba(255, 255, 255, 0.1);
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  width: 100%;
+  max-width: 400px; /* Asegura que no se expanda demasiado */
+}
+
+h1 {
+  font-size: 1.8rem;
+  margin-bottom: 1.5rem;
+  color: #fff;
+}
+
+/* Input fields */
+.input-group {
+  margin-bottom: 1.5rem; /* Espacio entre los inputs */
+  text-align: left;
+}
+
+label {
+  font-size: 1rem;
+  color: #ddd;
+  margin-bottom: 0.5rem;
+  display: block;
+}
+
+input {
+  width: 100%; /* Asegura que ocupe el 100% del contenedor */
+  padding: 1rem;
+  font-size: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  margin-top: 0.3rem;
+  background-color: rgba(255, 255, 255, 0.2);
+  color: #fff;
+  box-sizing: border-box; /* Asegura que el padding no aumente el tamaño total */
+}
+
+input:focus {
+  outline: none;
+  border-color: #6b73ff;
+  box-shadow: 0 0 5px #6b73ff;
+}
+
+/* Button styles */
+.btn-primary {
+  width: 100%;
+  padding: 1rem;
+  font-size: 1.2rem;
+  background: linear-gradient(135deg, #6b73ff, #000dff);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  margin-top: 1rem;
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, #4b53ff, #0009df);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.message {
+  margin-top: 1rem;
+  font-size: 1rem;
+  background: rgba(0, 0, 0, 0.2);
+  padding: 0.5rem;
+  border-radius: 8px;
+  color: #ffdddd;
+}
