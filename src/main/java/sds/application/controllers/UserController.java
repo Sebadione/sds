@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -45,13 +46,17 @@ public class UserController {
         try {
             User user = userService.loadCurrentUser();
             return ResponseHandler.success(user);
-        } catch (Exception e) {
+
+        } catch (AuthorizationDeniedException e) {
+            return ResponseHandler.unauthorized(e.getMessage());
+        }
+        catch (Exception e) {
             System.out.println(e.getMessage());
             return ResponseHandler.internalError();
         }
     }
 
-    @PostMapping("/api/login")
+    @PostMapping("/auth/login")
     @PreAuthorize("permitAll()")
     public ResponseEntity<Object> login(@RequestBody LoginRequest loginRequest, HttpServletRequest request) {
         try {

@@ -31,7 +31,6 @@ import sds.services.UserService;
 public class SecurityConfig {
 
     private JwtUtils jwtUtils;
-    private CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
@@ -40,16 +39,7 @@ public class SecurityConfig {
                 .sessionManagement(session -> {
                     session.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
                 })
-                .formLogin(login -> login
-                        .loginPage("/login")
-                        .defaultSuccessUrl("/welcome", true)
-
-                )
-
                 .httpBasic(Customizer.withDefaults())
-                .exceptionHandling(exception -> exception
-                        .authenticationEntryPoint(customAuthenticationEntryPoint)
-                )
         .addFilterBefore(new JwtTokenValidator(jwtUtils), BasicAuthenticationFilter.class);
     return httpSecurity.build();
     }
@@ -66,7 +56,6 @@ public class SecurityConfig {
         provider.setUserDetailsService(userService);
         return provider;
     }
-
 
     @Bean
     public PasswordEncoder passwordEncoder() {
