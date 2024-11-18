@@ -56,6 +56,22 @@ public class UserController {
         }
     }
 
+    @GetMapping("/api/admin")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<Object> getUserAdmin() {
+        try {
+            User user = userService.loadCurrentUser();
+            return ResponseHandler.success(user);
+
+        } catch (AuthorizationDeniedException e) {
+            return ResponseHandler.unauthorized(e.getMessage());
+        }
+        catch (Exception e) {
+            System.out.println(e.getMessage());
+            return ResponseHandler.internalError();
+        }
+    }
+
     @PostMapping("/auth/login")
     @PreAuthorize("permitAll()")
     public ResponseEntity<Object> login(@RequestBody LoginRequest loginRequest, HttpServletRequest request) {
