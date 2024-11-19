@@ -1,7 +1,6 @@
 package sds.application.controllers;
 
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -94,7 +93,7 @@ public class UserController {
 
             String accessToken = jwtUtils.createToken(authentication);
             System.out.println(authentication);
-            return ResponseHandler.success(new AuthResponse(loginRequest.getUsername(), "Login exitoso", accessToken));
+            return ResponseEntity.ok(new AuthResponse(authentication.getName(), "Usuario autenticado", accessToken));
 
 
         } catch (AuthenticationException e) {
